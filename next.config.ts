@@ -1,14 +1,12 @@
 import type { NextConfig } from "next";
 
-const repo = "portfolio";
-
 const nextConfig: NextConfig = {
   output: "export",
-  images: {
-    unoptimized: true,
-  },
-  basePath: `/${repo}`,
-  assetPrefix: `/${repo}/`,
+  images: { unoptimized: true },
+
+  // 👇 ОБЯЗАТЕЛЬНО для GitHub Pages (repo: "portfolio")
+  basePath: "/portfolio",
+  assetPrefix: "/portfolio/",
   trailingSlash: true,
 };
 
