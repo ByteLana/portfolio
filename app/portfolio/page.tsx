@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
@@ -10,12 +9,6 @@ type Project = {
   description: string;
   tech: string[];
   image: string;
-};
-
-type ProjectPageProps = {
-  params: {
-    id: string;
-  };
 };
 
 const projects: Project[] = [
@@ -44,3 +37,47 @@ const projects: Project[] = [
     image: "/projects/project3.jpg",
   },
 ];
+
+export default function PortfolioPage() {
+  return (
+    <div className="min-h-screen px-6 py-20 max-w-5xl mx-auto">
+      <h1 className="text-4xl font-bold mb-10 text-center">My Projects</h1>
+
+      <div className="grid md:grid-cols-2 gap-10">
+        {projects.map((project) => (
+          <motion.div
+            key={project.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="p-5 rounded-xl border border-gray-700 bg-gray-900"
+          >
+            <div className="overflow-hidden rounded-xl mb-4">
+              <Image
+                src={project.image}
+                width={600}
+                height={350}
+                alt={project.title}
+                className="object-cover"
+              />
+            </div>
+
+            <h2 className="text-2xl font-semibold mb-2">{project.title}</h2>
+            <p className="text-gray-300 mb-4">{project.description}</p>
+
+            <div className="flex flex-wrap gap-2">
+              {project.tech.map((t) => (
+                <span
+                  key={t}
+                  className="px-3 py-1 bg-gray-700 text-sm rounded-full"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}
