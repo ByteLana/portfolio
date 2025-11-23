@@ -1,0 +1,7 @@
+# Создаём файл .gitignore с нужным содержимым
+@"
+node_modules/
+.next/
+.DS_Store
+.env
+"@ | Set-Content .gitignore
