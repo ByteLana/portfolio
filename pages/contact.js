@@ -1,22 +1,51 @@
-import Header from "../components/Header";
+import Head from "next/head";
+import { useState } from "react";
+
 export default function Contact() {
+  const [formMessage, setFormMessage] = useState("");
+  const [menuActive, setMenuActive] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+
+    const res = await fetch("https://formspree.io/f/xyzvaqbe", {
+      method: "POST",
+      body: formData,
+      headers: { "Accept": "application/json" },
+    });
+
+    if (res.ok) {
+      setFormMessage("Message sent successfully!");
+      setShowMessage(true);
+      e.target.reset();
+      // Скрыть сообщение через 3 секунды
+      setTimeout(() => setShowMessage(false), 3000);
+    } else {
+      setFormMessage("Error sending message. Please try again.");
+      setShowMessage(true);
+      setTimeout(() => setShowMessage(false), 3000);
+    }
+  };
+
   return (
     <>
-      <head>
+      <Head>
         <title>Contact | My Portfolio</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      </head>
+      </Head>
 
       <header>
         <nav>
           <div className="logo">MyName</div>
-          <ul className="nav-links">
+          <ul className={`nav-links ${menuActive ? "active" : ""}`}>
             <li><a href="/">Home</a></li>
             <li><a href="/about">About</a></li>
             <li><a href="/projects">Projects</a></li>
             <li><a className="active">Contact</a></li>
           </ul>
-          <div className="hamburger">
+          <div className="hamburger" onClick={() => setMenuActive(!menuActive)}>
             <span></span>
             <span></span>
             <span></span>
@@ -27,16 +56,11 @@ export default function Contact() {
       <main>
         <section className="contact-section">
           <h1>Contact Me</h1>
+          <div className={`form-message ${showMessage ? "visible" : ""}`}>
+            {formMessage}
+          </div>
 
-          <div id="form-message">Message sent successfully!</div>
-
-          <form
-            className="contact-form"
-            id="contactForm"
-            action="https://formspree.io/f/mvgylzyz"
-            method="POST"
-            encType="multipart/form-data"
-          >
+          <form className="contact-form" onSubmit={handleSubmit}>
             <label>
               Your Email:
               <input type="email" name="email" required />
@@ -45,11 +69,6 @@ export default function Contact() {
             <label>
               Message:
               <textarea name="message" rows="5" required></textarea>
-            </label>
-
-            <label>
-              Attach File:
-              <input type="file" name="upload" multiple />
             </label>
 
             <button type="submit">Send</button>
@@ -96,8 +115,40 @@ export default function Contact() {
           color: #333;
           transition: color 0.3s;
         }
-        .nav-links li a:hover, .nav-links li a.active {
+        .nav-links li a:hover,
+        .nav-links li a.active {
           color: #4da6ff;
+        }
+        .hamburger {
+          display: none;
+          flex-direction: column;
+          gap: 5px;
+          cursor: pointer;
+        }
+        .hamburger span {
+          width: 25px;
+          height: 3px;
+          background-color: #333;
+          border-radius: 2px;
+        }
+        .nav-links.active {
+          display: flex;
+        }
+        @media (max-width: 768px) {
+          .nav-links {
+            display: none;
+            position: absolute;
+            top: 70px;
+            right: 0;
+            background: #fff;
+            flex-direction: column;
+            width: 200px;
+            padding: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+          }
+          .hamburger {
+            display: flex;
+          }
         }
         .contact-section {
           max-width: 900px;
@@ -106,7 +157,6 @@ export default function Contact() {
           background: #fff;
           border-radius: 15px;
           box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-          animation: fadeIn 1s ease;
         }
         .contact-section h1 {
           color:#93bee9;
@@ -125,7 +175,8 @@ export default function Contact() {
           font-weight: bold;
           font-size: 0.9rem;
         }
-        .contact-form input, .contact-form textarea {
+        .contact-form input,
+        .contact-form textarea {
           padding: 0.7rem 1rem;
           border: 1px solid #ccc;
           border-radius: 8px;
@@ -140,44 +191,18 @@ export default function Contact() {
           border-radius: 8px;
           cursor: pointer;
         }
-        #form-message {
-          display: none;
-          color: green;
-          margin-bottom: 1rem;
+        .form-message {
+          opacity: 0;
+          transition: opacity 0.5s ease-in-out;
           text-align: center;
+          color: green;
           font-weight: bold;
+          margin-bottom: 1rem;
+        }
+        .form-message.visible {
+          opacity: 1;
         }
       `}</style>
-
-      <script dangerouslySetInnerHTML={{
-        __html: `
-          const hamburger = document.querySelector('.hamburger');
-          const navLinks = document.querySelector('.nav-links');
-          hamburger?.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-          });
-
-          const form = document.getElementById('contactForm');
-          const messageDiv = document.getElementById('form-message');
-          form?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(form);
-            fetch(form.action, {
-              method: 'POST',
-              body: formData,
-              headers: { 'Accept': 'application/json' }
-            })
-            .then(response => {
-              if (response.ok) {
-                messageDiv.style.display = 'block';
-                form.reset();
-              } else {
-                alert('Error sending message.');
-              }
-            })
-          });
-        `
-      }} />
     </>
   );
 }
